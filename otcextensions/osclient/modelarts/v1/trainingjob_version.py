@@ -96,7 +96,6 @@ class CreateTrainingJobVersion(command.ShowOne):
             '--worker-server-num',
             metavar='<worker_server_num>',
             required=True,
-            type=int,
             help=_('Code directory of a training job, for example, /usr/app/.')
         )
         parser.add_argument(
@@ -155,8 +154,6 @@ class CreateTrainingJobVersion(command.ShowOne):
         parser.add_argument(
             '--pre-version-id',
             metavar='<pre_version_id>',
-            type=int,
-            required=True,
             help=_('ID of the previous version of a training job.')
         )
         parser.add_argument(
@@ -207,7 +204,7 @@ class CreateTrainingJobVersion(command.ShowOne):
         config_attrs = (
             'worker_server_num', 'app_url', 'boot_file_url', 'parameter',
             'dataset_id', 'dataset_version_id', 'spec_id', 'engine_id',
-            'train_url', 'log_url', 'model_id', 'pre_version_id'
+            'train_url', 'log_url', 'model_id'
             )
 
         # nfs_attrs = ('id', 'src_path')

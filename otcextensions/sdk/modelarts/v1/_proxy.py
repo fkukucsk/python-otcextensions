@@ -348,7 +348,7 @@ class Proxy(proxy.Proxy, proxy_mixin.V2ProxyMixin):
         return self._update(_trainingjob.TrainingJob, job_id, **attrs)
 
 
-    def create_trainingjob_version(self, job_id, **attrs):
+    def create_trainingjob_version(self, **attrs):
         """Create a training job from attributes
 
         :param dict attrs: Keyword arguments which will be used to create
@@ -358,9 +358,8 @@ class Proxy(proxy.Proxy, proxy_mixin.V2ProxyMixin):
         :returns: The results of trainjobs creation
         :rtype: :class:`~otcextensions.sdk.modelarts.v1.trainjob.Trainjob`
         """
-        print("****************", attrs)
         return self._create(
-            _trainingjob_version.TrainingJobVersion, jobId=job_id, prepend_key=False, **attrs
+            _trainingjob_version.TrainingJobVersion, prepend_key=False, **attrs
         )
 
     def delete_trainingjob_version(self, version_id, *attrs):

@@ -17,14 +17,13 @@ class TrainingJobVersion(resource.Resource):
     base_path = '/training-jobs/%(jobId)s/versions'
 
     resources_key = 'versions'
+
     allow_create = True
     allow_list = True
     allow_commit = False
     allow_delete = True
     allow_fetch = True
     allow_patch = True
-   
-    config = resource.Body('config', type=dict)
 
     #: Status of a training job. For details about the job statuses,
     #:  see Job Statuses.
