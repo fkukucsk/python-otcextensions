@@ -1,0 +1,153 @@
+# Licensed under the Apache License, Version 2.0 (the "License"); you may
+# not use this file except in compliance with the License. You may obtain
+# a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS, WITHOUT
+# WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied. See the
+# License for the specific language governing permissions and limitations
+# under the License.
+# import six
+from openstack import exceptions
+from openstack import resource
+from openstack import utils
+
+from otcextensions.common import format as otc_format
+
+
+class SampleLabelProperty(resource.Resource):
+    pass
+
+class SampleStats(resource.Resource):
+    pass
+
+
+class LabelStats(resource.Resource):
+    pass
+
+
+class SampleLabel(resource.Resource):
+    #: Label name
+    name = resource.Body('name', type=str)
+    #: Label type. The value range is the same as that of the dataset type.
+    type = resource.Body('type', type=int)
+    #: Label ID. Only entity labels and relationship labels of the triplet datasets have this value.
+    # The value is generated and returned by the foreground during sample labeling.
+    id = resource.Body('id', type=str)
+    #: Label attributes.
+    property = resource.Body('property', type=SampleLabelProperty)
+
+
+class SampleMetadata(resource.Resource):
+    #: (Built-in attribute) Image width, height, and depth
+    # In the list, the first number indicates the width (pixels),
+    # the second number indicates the height (pixels),
+    # and the third number indicates the depth (the depth can be left blank and the default value is 3).
+    size = resource.Body('size', type=list, list_type=int)
+    #: (Built-in attribute) Audio duration, in seconds
+    duration = resource.Body('duration', type=float)
+    #: Whether a sample is a hard example 0: non-hard example 1: hard example
+    hard = resource.Body('hard', type=str)
+
+
+class FileResult(resource.Resource):
+    #: Batch operation result.
+    success = resource.Body('success', type=str)
+    #: Error code. For details, see Error Code. This parameter is not included when an operation is successful.
+    error_code = resource.Body('error_code', type=str)
+    #: Error message. This parameter is not included when an operation is successful.
+    error_msg = resource.Body('error_msg', type=str)
+    #: Full file path. The service automatically adds a timestamp to the original file name.
+    # For example, cat.png is renamed cat_1432123582873.png.
+    name = resource.Body('name', type=str)
+    #: File information. This parameter exists only when a single operation is successful.
+    info = resource.Body('info', type=str)
+
+
+class SearchCondition(resource.Resource):
+    #: Filter samples based on the hard example status (that is, the key_sample field in the sample metadata).
+    #: 0: non-hard example 1: hard example
+    key_sample = resource.Body('key_sample', type=str)
+    #: Filter labels by label name in JSON format.
+    label_name = resource.Body('label_name', type=dict)
+    #: Filter samples by creation time. The format is YYYYMMDD-YYYYMMDD.
+    # The interval between the start date and end date cannot exceed 31 days.
+    sample_time = resource.Body('sample_time', type=str)
+    #: Sample name filtering. Fuzzy match is not supported. Example: dog_1.jpg
+    sample_name = resource.Body('sample_name', type=str)
+    #: Sample path filtering. The format is /Bucket name/Directory name/.
+    # Subdirectory recursive search is not supported. Example: /mybucket/set1/dog/
+    sample_dir = resource.Body('sample_dir', type=str)
+    #: Filter samples by annotator. The format is human/Tenant name/Username or human/Email address.
+    # Fuzzy match is not supported.
+    labeler = resource.Body('labeler', type=str)
+    #: Sample attribute filtering, which is in JSON format.
+    metadata = resource.Body('metadata', type=dict)
+
+
+class Result(resource.Resource):
+    #: Batch operation result.
+    success = resource.Body('success', type=str)
+    #: Error code. For details, see Error Code. This parameter is not included when an operation is successful.
+    error_code = resource.Body('error_code', type=str)
+    #: Error message. This parameter is not included when an operation is successful.
+    error_msg = resource.Body('error_msg', type=str)
+
+
+class Label(resource.Resource):
+   #: Label Status
+    label_stats = resource.Body('label_stats', type=list, list_type=LabelStats)
+    #: Sample Status
+    sample_stats = resource.Body('sample_stats', type=SampleStats)
+
+    #: Batch operation result
+    success = resource.Body('success', type=bool)
+    #: Operation result list.
+    results = resource.Body('results', type=list, list_type=Result)
+
+
+class Sample(resource.Resource):
+    #: Unique ID of a sample
+    sample_id = resource.Body('sample_id', type=str)
+    #: Sample label list.
+    labels = resource.Body('labels', type=list, list_type=Label)
+    #: Source address of a sample. If the address starts with http:// or https://, it is a URL.
+    #: If the address starts with content://, the following content is text content.
+    source = resource.Body('source', type=str)
+    #: Sample metadata
+    metadata = resource.Body('metadata', type=dict)
+
+
+class Samples(resource.Resource):
+    base_path = '/datasets/%(dataset_id)s/data-annotations/samples'
+
+    allow_create = True
+    allow_list = True
+    allow_commit = True
+    allow_delete = True
+    allow_fetch = True
+    allow_patch = True
+
+    #: Dataset ID
+    dataset_id = resource.URI('dataset_id', type=str)
+    #: Unique ID of a sample
+    sample_id = resource.Body('sample_id', type=str)
+    #: Source address of a sample. If the address starts with http:// or https://, it is a URL.
+    #: If the address starts with content://, the following content is text content.
+    source = resource.Body('source', type=str)
+    #: Annotator of a sample
+    annotated_by = resource.Body('annotated_by', type=str)
+    #: Total number of samples that meet the search criteria
+    sample_count = resource.Body('sample_count', type=str)
+    #: Sample list. Querying Details About a Sample describes the fields in the sample list.
+    samples = resource.Body('samples', type=list, list_type=Sample)
+
+    search_conditions = resource.Body('search_conditions', type=list, list_type=SearchCondition)
+    #: Batch operation result.
+    success = resource.Body('success', type=str)
+    #: Operation result list. For details, see Table 8.
+    # This parameter is not included when all operations are successful.
+    results = resource.Body('results', type=list, list_type=Result)
+
